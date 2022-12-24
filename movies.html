@@ -1,0 +1,259 @@
+<html>
+    <head>
+        <title> view Movies</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+       
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1>Movies</h1>
+        <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
+        <div>
+            <table class="table" id="movieTable">
+                <tr>
+                        <th>id</th>
+                        <th>Title</th>
+                        <th>Director</th>
+                        <th>Year</th>
+                        <th>Rating</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                </tr>
+                
+            </table>
+        </div>
+        <div id='createUpdateForm' style="display: none">
+                <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> Movie</h2>
+                <input type="hidden" name="id"/>
+                Title <input type="text" name="title" /><br/>
+                Director <input type="text" name="director"/> <br/>
+                Year <input type="number" name="year"/> <br/>
+                Rating <input type="number" name="rating"/> <br/>
+                <span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
+                <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
+        </div>
+    </body>
+    <script>
+    function init(){
+        getAllAjax()
+    }
+    
+    function showCreate(){
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('movieTable').style.display="none"
+        document.getElementById('createUpdateForm').style.display="block"
+
+        document.getElementById('createLabel').style.display="inline"
+        document.getElementById('updateLabel').style.display="none"
+
+        document.getElementById('doCreateButton').style.display="block"
+        document.getElementById('doUpdateButton').style.display="none"
+
+    }
+    function showViewAll(){
+        document.getElementById('showCreateButton').style.display="block"
+        document.getElementById('movieTable').style.display="block"
+        document.getElementById('createUpdateForm').style.display="none"
+    }
+    function showUpdate(buttonElement){
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('movieTable').style.display="none"
+        document.getElementById('createUpdateForm').style.display="block"
+
+        document.getElementById('createLabel').style.display="none"
+        document.getElementById('updateLabel').style.display="inline"
+
+        document.getElementById('doCreateButton').style.display="none"
+        document.getElementById('doUpdateButton').style.display="block"
+
+
+        var rowElement = buttonElement.parentNode.parentNode
+        // these is a way of finding the closest <tr> which would safer, closest()
+        
+        var movie = getMovieFromRow(rowElement)
+        populateFormWithMovie(movie)
+    }
+    function doCreate(){
+        var form = document.getElementById('createUpdateForm')
+
+        var movie = {}
+       
+        movie.title = form.querySelector('input[name="title"]').value
+        movie.director = form.querySelector('input[name="director"]').value
+        movie.year = form.querySelector('input[name="year"]').value
+        movie.rating = form.querySelector('input[name="rating"]').value
+        console.log(JSON.stringify(movie))
+        createMovieAjax(movie)
+
+        addMovieToTable(movie)
+        clearForm()
+        showViewAll()
+        createMovieAjax(movie)
+    }
+
+    function doUpdate(){
+        var movie = getMovieFromForm();
+        var rowElement = document.getElementById(movie.id);
+        updateMovieAjax(movie);
+        setMovieInRow(rowElement,movie);
+       
+        clearForm();
+        showViewAll();
+    }
+
+    function doDelete(r){
+        var tableElement = document.getElementById('movieTable');
+        var rowElement = r.parentNode.parentNode;
+        var index = rowElement.rowIndex;
+        deleteMovieAjax(rowElement.getAttribute("id"));
+        tableElement.deleteRow(index);
+    }
+
+    function addMovieToTable(movie){
+        var tableElement = document.getElementById('movieTable')
+        var rowElement = tableElement.insertRow(-1)
+        rowElement.setAttribute('id',movie.id)
+        var cell1 = rowElement.insertCell(0);
+        cell1.innerHTML = movie.id
+        var cell2 = rowElement.insertCell(1);
+        cell2.innerHTML = movie.title
+        var cell3 = rowElement.insertCell(2);
+        cell3.innerHTML = movie.director
+        var cell4 = rowElement.insertCell(3);
+        cell4.innerHTML = movie.year
+        var cell5 = rowElement.insertCell(4);
+        cell5.innerHTML = movie.rating
+        var cell6 = rowElement.insertCell(5);
+        cell6.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+        var cell7 = rowElement.insertCell(6);
+        cell7.innerHTML = '<button onclick=doDelete(this)>delete</button>'
+
+    }
+
+    function clearForm(){
+        var form = document.getElementById('createUpdateForm')
+
+        form.querySelector('input[name="title"]').value=''
+        form.querySelector('input[name="director"]').value=''
+        form.querySelector('input[name="year"]').value=''
+        form.querySelector('input[name="rating"]').value=''
+    }
+    function getMovieFromRow(rowElement){
+        var car ={}
+        movie.id  = rowElement.getAttribute('id')
+        movie.title = rowElement.cells[1].firstChild.textContent
+        movie.director = rowElement.cells[2].firstChild.textContent
+        movie.year = parseInt(rowElement.cells[3].firstChild.textContent,10)
+        movie.rating = parseInt(rowElement.cells[4].firstChild.textContent,10)
+        return movie
+    }
+    function setMovieInRow(rowElement, movie){
+        rowElement.cells[0].firstChild.textContent= movie.id  
+        rowElement.cells[1].firstChild.textContent= movie.title 
+        rowElement.cells[2].firstChild.textContent= movie.director
+        rowElement.cells[3].firstChild.textContent= movie.year
+        rowElement.cells[4].firstChild.textContent= movie.rating
+    }
+    function populateFormWithMovie(movie){
+        var form = document.getElementById('createUpdateForm')
+        form.querySelector('input[name="id"]').disabled = true
+
+        form.querySelector('input[name="id"]').value  = movie.id
+        form.querySelector('input[name="title"]').value= movie.title
+        form.querySelector('input[name="director"]').value= movie.director
+        form.querySelector('input[name="year"]').value= movie.year
+        form.querySelector('input[name="rating"]').value= movie.rating
+        return movie
+    }
+    function getMovieFromForm(){
+        var form = document.getElementById('createUpdateForm')
+        var movie = {}
+        movie.id = form.querySelector('input[name="id"]').value
+        movie.title = form.querySelector('input[name="title"]').value
+        movie.director = form.querySelector('input[name="director"]').value
+        movie.year = parseInt(form.querySelector('input[name="year"]').value,10)
+        movie.rating = parseInt(form.querySelector('input[name="rating"]').value,10)
+        console.log(JSON.stringify(movie))
+        return movie
+    }
+    function getAllAjax(){
+        $.ajax({
+            "url": "http://127.0.0.1:5000/movies",
+            "method":"GET",
+            "data":"",
+            "dataType": "JSON",
+            "success":function(result){
+                //console.log(result);
+                for (movie of result){
+                    addMovieToTable(movie);
+                }
+                
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+
+    }
+    function createMovieAjax(movie){
+        console.log(JSON.stringify(movie));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/movies",
+            "method":"POST",
+            "data":JSON.stringify(movie),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                movie.id = result.id
+                addMovieToTable(movie)
+                clearForm()
+                showViewAll()
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function updateMovieAjax(movie){
+        console.log(JSON.stringify(movie));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/movies/"+encodeURI(movie.id),
+            "method":"PUT",
+            "data":JSON.stringify(movie),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+               // console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function deleteMovieAjax(id){
+        
+        //console.log(JSON.stringify('deleting '+id));
+        $.ajax({
+            "url": "http://127.0.0.1:5000/movies/"+encodeURI(id),
+            "method":"DELETE",
+            "data":"",
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    getAllAjax();
+    init()
+  
+
+    
+    </script>
+</html>

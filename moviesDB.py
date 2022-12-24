@@ -11,23 +11,23 @@ class MovieDB:
     cursor = ""
 
     def __init__(self):
-        self.host = mysql.connector.connect(
-            host =      cfg.mysql['host'],
-            user =      cfg.mysql['user'],
-            password =  cfg.mysql['password'],
-            database =  cfg.mysql['database']
+        self.db = mysql.connector.connect(
+            host = 'localhost',
+            user = 'root',
+            password = '',
+            database = 'kino'
         )
     
     def createEntry(self,values):
         cursor = self.db.cursor()
-        sql="insert into movies (title,director,year) values (%s,%s,%s)"
+        sql="insert into movies (title,director,year,rating) values (%s,%s,%s,%s)"
         cursor.execute(sql, values)
 
         self.db.commit()
         newId = cursor.lastrowid
         return cursor.lastrowid
     
-    def getAll(self):
+    def getAllMovies(self):
         cursor = self.db.cursor()
         sql="select * from movies"
         cursor.execute(sql)
@@ -50,7 +50,7 @@ class MovieDB:
     
     def updateEntry(self, values):
         cursor = self.db.cursor()
-        sql = "update movie set title=%s,director=%s,year=%s where id=%s"
+        sql = "update movie set title=%s,director=%s,year=%s,rating=%s where id=%s"
         cursor.execute(sql, values)
         self.db.commit()
     
@@ -64,7 +64,7 @@ class MovieDB:
         print("delete done")
     
     def convertToDictionary(self,result):
-        colnames=['id','Title','Director','Year']
+        colnames=['id','Title','Director','Year','Rating']
         item = {}
 
         if result:
