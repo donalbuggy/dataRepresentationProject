@@ -23,4 +23,4 @@ To run the code:
 * Enter the login information provided
 * The main table with the existing entries will appear in the browser. Test the CRUD operations with the buttons
 
-The app is also hosted at donalbuggy.pythonanwhere.com
+The app is also hosted at donalbuggy.pythonanywhere.com
