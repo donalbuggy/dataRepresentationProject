@@ -10,6 +10,7 @@ class MovieDB:
     connection = ""
     cursor = ""
 
+    # defining connection/database details
     def __init__(self):
         self.db = mysql.connector.connect(
             host = 'localhost',
@@ -18,6 +19,8 @@ class MovieDB:
             database = 'kino'
         )
     
+
+    # creating a new entry and sending the data to the server
     def createEntry(self,values):
         cursor = self.db.cursor()
         sql="insert into movies (title,director,year,rating) values (%s,%s,%s,%s)"
@@ -27,6 +30,8 @@ class MovieDB:
         newId = cursor.lastrowid
         return newId
     
+
+    # appending all entries to a dictionary and returning the output
     def getAllMovies(self):
         cursor = self.db.cursor()
         sql="select * from movies"
@@ -39,6 +44,8 @@ class MovieDB:
             returnArray.append(self.convertToDictionary(result))
         return returnArray
     
+
+    # finding a specific entry by ID number
     def findById(self, id):
         cursor = self.db.cursor()
         sql = "select * from movies where id=%s"
@@ -48,12 +55,16 @@ class MovieDB:
         result = cursor.fetchone()
         return self.convertToDictionary(result)
     
+
+    # updating an entry with new values
     def updateEntry(self, values):
         cursor = self.db.cursor()
         sql = "update movie set title=%s,director=%s,year=%s,rating=%f where id=%s"
         cursor.execute(sql, values)
         self.db.commit()
     
+
+    # deleting an entry based on ID number
     def deleteEntry(self, id):
         cursor = self.db.cursor()
         sql = "delete from movies where id=%s"
@@ -63,6 +74,8 @@ class MovieDB:
         self.db.commit()
         print("delete done")
     
+
+    # convering data to a dictionary
     def convertToDictionary(self,result):
         colnames=['id','Title','Director','Year','Rating']
         item = {}
@@ -73,6 +86,8 @@ class MovieDB:
                 item[colName] = value
         return item
     
+
+    # closing all database connections
     def closeAll(self):
         db.close()
         cursor.close()

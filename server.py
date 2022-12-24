@@ -6,6 +6,7 @@ app.secret_key = "secretrg56ugfwr43rh"
 
 # app = Flask(__name__)
 
+# defining the initial content of the home page
 movies = [
     {"id":1,"title":"The Shining","director":"Stanley Kubrick","year":"1980","rating":"8.4"},
     {"id":2,"title":"The Irishman","director":"Martin Scorsese","year":"2019","rating":"7.8"},
@@ -16,7 +17,10 @@ movies = [
     {"id":7,"title":"Barry Lyndon","director":"Stanley Kubrick","year":"1975","rating":"8.1"},
     {"id":8,"title":"Mean Streets","director":"Martin Scorsese","year":"1973","rating":"7.2"}
 ]
+
+# defining the starting point of the subsequent entry id's
 newId = 8
+
 @app.route('/')
 def home():
     if not 'username' in session:
@@ -28,6 +32,7 @@ def home():
     #     '<br><a href="' + url_for('logout') + '">logout</a>'
 
 
+# login code adapted from lecture notes
 @app.route('/login')
 def login():
     return '<h1>login</h1> ' +\
@@ -49,6 +54,7 @@ def login():
 def process_login():
     session['username'] = "user"
 
+    # returning to home page with login credentials defined
     return redirect(url_for('home'))
 
 
@@ -66,11 +72,13 @@ def logout():
 #     return '{"data":"all here"}'
 
 
+# function to see all entries
 @app.route('/movies', methods=['GET'])
 def getAllMovies():
     return movies
 
 
+# function to add a new entry; incrementing ID number
 @app.route('/movies', methods=['POST'])
 def addMovie():
     if not request.json:
@@ -91,6 +99,7 @@ def addMovie():
     return jsonify(movie)
 
 
+# updating an entry based on ID number
 @app.route('/movies/<int:id>', methods=['PUT'])
 def updateEntry(id):
     foundMovie = movieDB.findById(id)
@@ -116,6 +125,7 @@ def updateEntry(id):
     return jsonify(foundMovie)
 
 
+# function to delete an entry
 @app.route('/movies/<int:id>', methods=['DELETE'])
 def deleteEntry(id):
     movieDB.deleteEntry(id)

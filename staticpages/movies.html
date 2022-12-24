@@ -7,6 +7,8 @@
     </head>
     <body>
         <h1>Movies</h1>
+
+        <!-- table displaying entries -->
         <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
         <div>
             <table class="table" id="movieTable">
@@ -22,6 +24,8 @@
                 
             </table>
         </div>
+
+        <!-- form to enter details of new entry, appears when showCreate() or showUpdate() functions called -->
         <div id='createUpdateForm' style="display: none">
                 <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> Movie</h2>
                 <input type="hidden" name="id"/>
@@ -38,6 +42,7 @@
         getAllAjax()
     }
     
+    // function to hide main table, shows the create form
     function showCreate(){
         document.getElementById('showCreateButton').style.display="none"
         document.getElementById('movieTable').style.display="none"
@@ -50,11 +55,15 @@
         document.getElementById('doUpdateButton').style.display="none"
 
     }
+
+    // function to show all entries
     function showViewAll(){
         document.getElementById('showCreateButton').style.display="block"
         document.getElementById('movieTable').style.display="block"
         document.getElementById('createUpdateForm').style.display="none"
     }
+
+    // function to show update form
     function showUpdate(buttonElement){
         document.getElementById('showCreateButton').style.display="none"
         document.getElementById('movieTable').style.display="none"
@@ -68,11 +77,12 @@
 
 
         var rowElement = buttonElement.parentNode.parentNode
-        // these is a way of finding the closest <tr> which would safer, closest()
         
         var movie = getMovieFromRow(rowElement)
         populateFormWithMovie(movie)
     }
+
+    // function to create a new entry
     function doCreate(){
         var form = document.getElementById('createUpdateForm')
 
@@ -90,6 +100,7 @@
         createMovieAjax(movie)
     }
 
+    // function to process update
     function doUpdate(){
         var movie = getMovieFromForm();
         var rowElement = document.getElementById(movie.id);
@@ -100,6 +111,7 @@
         showViewAll();
     }
 
+    // function to process deletion of entry
     function doDelete(r){
         var tableElement = document.getElementById('movieTable');
         var rowElement = r.parentNode.parentNode;
@@ -108,6 +120,7 @@
         tableElement.deleteRow(index);
     }
 
+    // function to add a new entry to the table
     function addMovieToTable(movie){
         var tableElement = document.getElementById('movieTable')
         var rowElement = tableElement.insertRow(-1)
@@ -137,8 +150,10 @@
         form.querySelector('input[name="year"]').value=''
         form.querySelector('input[name="rating"]').value=''
     }
+
+    // finds an entry based on ID number
     function getMovieFromRow(rowElement){
-        var car ={}
+        var movie ={}
         movie.id  = rowElement.getAttribute('id')
         movie.title = rowElement.cells[1].firstChild.textContent
         movie.director = rowElement.cells[2].firstChild.textContent
@@ -146,6 +161,8 @@
         movie.rating = parseInt(rowElement.cells[4].firstChild.textContent,10)
         return movie
     }
+
+    // passes movie attributes to cells
     function setMovieInRow(rowElement, movie){
         rowElement.cells[0].firstChild.textContent= movie.id  
         rowElement.cells[1].firstChild.textContent= movie.title 
@@ -153,6 +170,7 @@
         rowElement.cells[3].firstChild.textContent= movie.year
         rowElement.cells[4].firstChild.textContent= movie.rating
     }
+
     function populateFormWithMovie(movie){
         var form = document.getElementById('createUpdateForm')
         form.querySelector('input[name="id"]').disabled = true
@@ -164,6 +182,7 @@
         form.querySelector('input[name="rating"]').value= movie.rating
         return movie
     }
+
     function getMovieFromForm(){
         var form = document.getElementById('createUpdateForm')
         var movie = {}
@@ -175,6 +194,8 @@
         console.log(JSON.stringify(movie))
         return movie
     }
+
+    // passes get command to the database, calls function to pass entry data to the main table
     function getAllAjax(){
         $.ajax({
             "url": "http://127.0.0.1:5000/movies",
@@ -194,6 +215,8 @@
         });
 
     }
+
+    // passes post command to the database
     function createMovieAjax(movie){
         console.log(JSON.stringify(movie));
         $.ajax({
@@ -214,6 +237,8 @@
             }
         });
     }
+
+    // passes update command to the database
     function updateMovieAjax(movie){
         console.log(JSON.stringify(movie));
         $.ajax({
@@ -231,8 +256,9 @@
             }
         });
     }
+
+    // passes delete command to the database
     function deleteMovieAjax(id){
-        
         //console.log(JSON.stringify('deleting '+id));
         $.ajax({
             "url": "http://127.0.0.1:5000/movies/"+encodeURI(id),
@@ -249,6 +275,8 @@
             }
         });
     }
+
+    // initiating main function
     init()
   
 
