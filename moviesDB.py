@@ -25,7 +25,7 @@ class MovieDB:
 
         self.db.commit()
         newId = cursor.lastrowid
-        return cursor.lastrowid
+        return newId
     
     def getAllMovies(self):
         cursor = self.db.cursor()
@@ -50,7 +50,7 @@ class MovieDB:
     
     def updateEntry(self, values):
         cursor = self.db.cursor()
-        sql = "update movie set title=%s,director=%s,year=%s,rating=%s where id=%s"
+        sql = "update movie set title=%s,director=%s,year=%s,rating=%f where id=%s"
         cursor.execute(sql, values)
         self.db.commit()
     

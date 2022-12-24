@@ -83,9 +83,8 @@
         movie.year = form.querySelector('input[name="year"]').value
         movie.rating = form.querySelector('input[name="rating"]').value
         console.log(JSON.stringify(movie))
-        createMovieAjax(movie)
 
-        addMovieToTable(movie)
+        //addMovieToTable(movie)
         clearForm()
         showViewAll()
         createMovieAjax(movie)
@@ -250,7 +249,6 @@
             }
         });
     }
-    getAllAjax();
     init()
   
 
