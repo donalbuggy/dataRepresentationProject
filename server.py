@@ -31,6 +31,13 @@ def home():
 @app.route('/login')
 def login():
     return '<h1>login</h1> ' +\
+        '<div>Username: user<br>Password:password<br></div>' +\
+        '<form action="/action_page.php">' +\
+            '<label for="uname">Username:</label>' +\
+            '<input type="text" id="uname" name="uname"><br><br>' +\
+            '<label for="pword">Password:</label>' +\
+            '<input type="text" id="pword" name="pword"><br><br>' +\
+        '</form> ' +\
         '<button>' +\
             '<a href="' + url_for('process_login') + '">' +\
                 'login' +\
@@ -40,7 +47,8 @@ def login():
 
 @app.route('/process_login')
 def process_login():
-    session['username'] = "Donal"
+    session['username'] = "user"
+
     return redirect(url_for('home'))
 
 
